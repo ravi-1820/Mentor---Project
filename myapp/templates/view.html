@@ -1,0 +1,82 @@
+{% extends 'mheader.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Courses Section -->
+<section id="courses" class="courses section">
+
+
+
+  <div class="container">
+    <div class="row">
+
+      {% for i in course %}
+      <div class="col-lg-4 col-md-6 d-flex align-items-stretch mb-4"
+           data-aos="zoom-in"
+           data-aos-delay="{{ forloop.counter }}00">
+
+        <div class="course-item">
+
+          <!-- Course Image -->
+          <a href="{% url 'cpdetails' pk=i.pk %}">
+            <img src="{{ i.cimage.url }}" class="img-fluid" alt="{{ i.cname }}">
+          </a>
+
+          <div class="course-content">
+
+            <!-- Category & Price -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <p class="category">{{ i.cname }}</p>
+              <p class="price">₹{{ i.cprice }}</p>
+            </div>
+
+            <!-- Course Title -->
+            <h3>
+              <a href="{% url 'cpdetails' pk=i.pk %}">
+                {{ i.cname }}
+              </a>
+            </h3>
+
+            <!-- Course Description -->
+            <p class="description">
+              {{ i.desc }}
+            </p>
+
+            <!-- Trainer Info (same CSS, safe image handling) -->
+            <div class="trainer d-flex justify-content-between align-items-center mt-3">
+
+              <div class="trainer-profile d-flex align-items-center">
+                {% if i.timage %}
+                  <img src="{{ i.timage.url }}"
+                       class="img-fluid rounded-circle me-2"
+                       alt="{{ i.tname }}"
+                       style="width:40px; height:40px;">
+                {% else %}
+                  <img src="{{ i.cimage.url }}"
+                       class="img-fluid rounded-circle me-2"
+                       alt="Trainer"
+                       style="width:40px; height:40px;">
+                {% endif %}
+
+                <a href="{% url 'trainers' %}" class="trainer-link">
+                  {{ i.tname }}
+                </a>
+              </div>
+
+              <div class="trainer-rank d-flex align-items-center">
+                <i class="bi bi-clock"></i>&nbsp;{{ i.duration }} months
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+
+</section>
+<!-- /Courses Section -->
+{% endblock %}

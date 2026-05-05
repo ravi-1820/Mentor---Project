@@ -1,0 +1,151 @@
+{% extends 'mheader.html' %}
+{% load static %}
+{% block content %}
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title" data-aos="fade">
+      <div class="heading">
+        <div class="container">
+          <div class="row d-flex justify-content-center text-center">
+            <div class="col-lg-8">
+              <h1>Edit Course</h1>
+              <p class="mb-0">
+This comprehensive course is designed to equip learners with the essential skills and knowledge needed to excel in the field. Through practical exercises, real-world projects, and expert guidance, participants will gain the confidence to apply their learning immediately and advance their careers.
+</p>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <nav class="breadcrumbs">
+        <div class="container">
+          <ol>
+            <li><a href="{% url 'index' %}">Home</a></li>
+            <li class="current">Add-course</li>
+          </ol>
+        </div>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact section">
+
+      <div class="mb-5" data-aos="fade-up" data-aos-delay="200">
+        <iframe style="border:0; width: 100%; height: 300px;" src="https://www.google.com/maps?q=TOPS%20Technologies%20Maninagar%20Ahmedabad&output=embed" frameborder="0" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div><!-- End Google Maps -->
+      {% if msg %}
+      <div class="alert alert-danger" role="alert">
+        {{msg}}
+    </div>
+    {% endif %}
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4">
+
+          <div class="col-lg-4">
+    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+        <i class="bi bi-geo-alt flex-shrink-0"></i>
+        <div>
+            <h3>Address</h3>
+            <p>B-8 Bethlehem Flats, Patel Wadi, Maninagar (E), Ahmedabad-380008</p>
+        </div>
+    </div><!-- End Info Item -->
+
+    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+        <i class="bi bi-telephone flex-shrink-0"></i>
+        <div>
+            <h3>Call Us</h3>
+            <p>+91 95862 98667</p>
+        </div>
+    </div><!-- End Info Item -->
+
+    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="500">
+        <i class="bi bi-envelope flex-shrink-0"></i>
+        <div>
+            <h3>Email Us</h3>
+            <p>mahahajansachin1504@gmail.com</p>
+        </div>
+    </div><!-- End Info Item -->
+</div>
+
+
+
+  <div class="col-lg-8">
+  <form action="{% url 'edit' pk=course.pk %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row gy-4">
+
+      <!-- Course Name -->
+      <div class="col-md-12">
+        <input type="text" name="cname" class="form-control"
+               value="{{ course.cname }}" required>
+      </div>
+
+      <!-- Course Price -->
+      <div class="col-md-12">
+        <input type="number" name="cprice" class="form-control"
+               value="{{ course.cprice }}" required>
+      </div>
+
+      <!-- Description -->
+      <div class="col-md-12">
+        <label>Enter Description</label>
+        <textarea name="desc" rows="5" class="form-control" required>{{ course.desc }}</textarea>
+      </div>
+
+      <!-- Duration -->
+      <div class="col-md-12">
+        <input type="number" name="duration" class="form-control"
+               value="{{ course.duration }}" required>
+      </div>
+
+      <!-- Trainer Name -->
+      <div class="col-md-12">
+        <input type="text" name="tname" class="form-control"
+               value="{{ course.tname }}" required>
+      </div>
+
+      <!-- Trainer Experience -->
+      <div class="col-md-12">
+        <input type="text" name="texp" class="form-control"
+               value="{{ course.texp }}" required>
+      </div>
+
+      <!-- Course Image -->
+      <div class="col-md-12">
+        <label>Current Course Image</label><br>
+        {% if course.cimage %}
+          <img src="{{ course.cimage.url }}" width="150" class="mb-2">
+        {% endif %}
+        <input type="file" name="cimage" class="form-control">
+      </div>
+
+      <!-- Trainer Image -->
+      <div class="col-md-12">
+        <label>Current Trainer Image</label><br>
+        {% if course.timage %}
+          <img src="{{ course.timage.url }}" width="150" class="mb-2">
+        {% endif %}
+        <input type="file" name="timage" class="form-control">
+      </div>
+
+      <!-- Submit Button -->
+      <div class="col-md-12">
+        <button type="submit" class="btn btn-dark">Update Course</button>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+        </div>
+
+      </div>
+
+    </section><!-- /Contact Section -->
+
+  </main>
+
+  {% endblock %}

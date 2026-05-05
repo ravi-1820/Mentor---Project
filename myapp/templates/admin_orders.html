@@ -1,0 +1,576 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Orders - Admin Panel | Mentor</title>
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <style>
+        :root {
+            --mentor-primary: #5fcf80;
+            --mentor-blue: #1977cc;
+            --sidebar-bg: #1a1f2e;
+            --sidebar-text: #c8d0e0;
+            --card-shadow: 0 4px 24px rgba(0, 0, 0, .08);
+        }
+
+        body {
+            background: #f4f6fb;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .admin-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            z-index: 1040;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, .15);
+        }
+
+        .sidebar-brand {
+            padding: 28px 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        .sidebar-brand h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 0;
+        }
+
+        .sidebar-brand h1 span {
+            color: var(--mentor-primary);
+        }
+
+        .sidebar-brand small {
+            color: var(--sidebar-text);
+            font-size: .75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .nav-section-label {
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: rgba(200, 208, 224, .4);
+            text-transform: uppercase;
+            padding: 16px 24px 6px;
+        }
+
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 24px;
+            color: var(--sidebar-text);
+            font-size: .88rem;
+            font-weight: 500;
+            border-radius: 8px;
+            margin: 2px 12px;
+            transition: all .2s;
+            text-decoration: none;
+        }
+
+        .sidebar-nav .nav-link i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-nav .nav-link:hover {
+            background: rgba(95, 207, 128, .12);
+            color: #fff;
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav .nav-link.active {
+            background: linear-gradient(135deg, rgba(95, 207, 128, .2), rgba(95, 207, 128, .05));
+            color: var(--mentor-primary);
+            border-left: 3px solid var(--mentor-primary);
+            margin-left: 12px;
+            padding-left: 21px;
+        }
+
+        .sidebar-footer {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .sidebar-user img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--mentor-primary);
+        }
+
+        .sidebar-user-info .name {
+            color: #fff;
+            font-size: .85rem;
+            font-weight: 600;
+        }
+
+        .sidebar-user-info .role {
+            color: var(--mentor-primary);
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 9px 14px;
+            background: rgba(255, 255, 255, .06);
+            color: var(--sidebar-text);
+            border: none;
+            border-radius: 8px;
+            font-size: .83rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all .2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(220, 53, 69, .2);
+            color: #ff6b7a;
+        }
+
+        .admin-main {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 0 0 40px;
+        }
+
+        .admin-topbar {
+            background: #fff;
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-title h4 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a1f2e;
+        }
+
+        .topbar-title p {
+            margin: 0;
+            font-size: .78rem;
+            color: #8a94a6;
+        }
+
+        .topbar-badge {
+            background: var(--mentor-primary);
+            color: #fff;
+            font-size: .7rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .admin-content {
+            padding: 32px;
+        }
+
+        .summary-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px 22px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .summary-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .s-green {
+            background: rgba(95, 207, 128, .15);
+            color: #5fcf80;
+        }
+
+        .s-purple {
+            background: rgba(111, 66, 193, .15);
+            color: #6f42c1;
+        }
+
+        .s-blue {
+            background: rgba(25, 119, 204, .15);
+            color: #1977cc;
+        }
+
+        .summary-val {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1a1f2e;
+            line-height: 1;
+        }
+
+        .summary-lbl {
+            font-size: .77rem;
+            color: #8a94a6;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .admin-table-wrap {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .search-bar {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            border: 1px solid #e4e8f0;
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-size: .86rem;
+            width: 280px;
+            outline: none;
+        }
+
+        .search-bar input:focus {
+            border-color: var(--mentor-primary);
+        }
+
+        .admin-table {
+            margin: 0;
+        }
+
+        .admin-table thead th {
+            background: #f8f9fc;
+            color: #5a6270;
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            border: none;
+            padding: 14px 18px;
+        }
+
+        .admin-table tbody td {
+            padding: 13px 18px;
+            vertical-align: middle;
+            border-color: #f0f2f7;
+            font-size: .86rem;
+        }
+
+        .admin-table tbody tr:hover {
+            background: #fafbff;
+        }
+
+        .course-thumb {
+            width: 52px;
+            height: 38px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1977cc, #5fcf80);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: .8rem;
+        }
+
+        .badge-paid {
+            background: rgba(95, 207, 128, .15);
+            color: #2e9c52;
+            font-size: .72rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .price-tag {
+            color: #5fcf80;
+            font-weight: 700;
+        }
+
+        .table-count-badge {
+            background: #f0f4ff;
+            color: #1977cc;
+            font-size: .75rem;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        @media(max-width:991.98px) {
+            .admin-sidebar {
+                transform: translateX(-260px);
+            }
+
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+
+            .admin-main {
+                margin-left: 0;
+            }
+
+            .sidebar-toggle {
+                display: flex !important;
+            }
+        }
+
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: #1a1f2e;
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            z-index: 1039;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+            <h1><span>M</span>entor</h1>
+            <small>Admin Panel</small>
+        </div>
+        <nav class="sidebar-nav">
+            <ul class="list-unstyled mb-0">
+                <li class="nav-section-label">Main</li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'admin_panel' %}"><i
+                            class="bi bi-speedometer2"></i> Dashboard</a></li>
+                <li class="nav-section-label">Manage</li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'admin_users' %}"><i class="bi bi-people"></i>
+                        Users</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'admin_courses' %}"><i
+                            class="bi bi-mortarboard"></i> Courses</a></li>
+                <li class="nav-item"><a class="nav-link active" href="{% url 'admin_orders' %}"><i
+                            class="bi bi-cart-check"></i> Orders</a></li>
+                <li class="nav-section-label">Site</li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'index' %}"><i class="bi bi-house"></i> View
+                        Site</a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <img src="{{ request.session.profile }}" alt="Admin">
+                <div class="sidebar-user-info">
+                    <div class="name">{{ admin_name }}</div>
+                    <div class="role">Super Admin</div>
+                </div>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout"><i class="bi bi-box-arrow-left"></i> Logout</a>
+        </div>
+    </aside>
+
+    <div class="admin-main">
+        <div class="admin-topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+                <div class="topbar-title">
+                    <h4><i class="bi bi-cart-check me-2" style="color:#6f42c1;"></i>Paid Orders</h4>
+                    <p>All successfully completed course purchases</p>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="topbar-badge"><i class="bi bi-shield-check me-1"></i>Admin</span>
+                <a href="{% url 'admin_panel' %}" class="btn btn-sm btn-outline-secondary"
+                    style="border-radius:8px;font-size:.8rem;">
+                    <i class="bi bi-arrow-left me-1"></i>Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="admin-content">
+            <!-- Summary Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-sm-4">
+                    <div class="summary-card">
+                        <div class="summary-icon s-green"><i class="bi bi-bag-check-fill"></i></div>
+                        <div>
+                            <div class="summary-val">{{ orders|length }}</div>
+                            <div class="summary-lbl">Total Orders</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="summary-card">
+                        <div class="summary-icon s-purple"><i class="bi bi-currency-rupee"></i></div>
+                        <div>
+                            <div class="summary-val">₹{{ total_revenue }}</div>
+                            <div class="summary-lbl">Total Revenue</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="summary-card">
+                        <div class="summary-icon s-blue"><i class="bi bi-people-fill"></i></div>
+                        <div>
+                            <div class="summary-val">{{ unique_buyers }}</div>
+                            <div class="summary-lbl">Unique Buyers</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="search-bar d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <input type="text" id="orderSearch" placeholder="🔍  Search orders…"
+                        onkeyup="filterTable('orderSearch','orderTable')">
+                    <span class="table-count-badge"><i class="bi bi-cart-check me-1"></i>{{ orders|length }}
+                        Orders</span>
+                </div>
+            </div>
+
+            <div class="admin-table-wrap">
+                <table class="table admin-table" id="orderTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Student</th>
+                            <th>Course</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for o in orders %}
+                        <tr>
+                            <td class="text-muted">{{ forloop.counter }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if o.user.profile %}
+                                    <img src="{{ o.user.profile.url }}" class="user-avatar" alt="{{ o.user.name }}">
+                                    {% else %}
+                                    <div class="avatar-placeholder">{{ o.user.name|first|upper }}</div>
+                                    {% endif %}
+                                    <div>
+                                        <div style="font-size:.84rem;font-weight:600;">{{ o.user.name }}</div>
+                                        <div class="text-muted" style="font-size:.72rem;">{{ o.user.email }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if o.courses.cimage %}
+                                    <img src="{{ o.courses.cimage.url }}" class="course-thumb"
+                                        alt="{{ o.courses.cname }}">
+                                    {% endif %}
+                                    <strong style="font-size:.84rem;">{{ o.courses.cname }}</strong>
+                                </div>
+                            </td>
+                            <td><span class="price-tag">₹{{ o.tprice }}</span></td>
+                            <td class="text-muted">{{ o.qty }}</td>
+                            <td class="text-muted" style="font-size:.78rem;">{{ o.ttime|date:"d M Y" }}</td>
+                            <td><span class="badge-paid"><i class="bi bi-check-circle-fill me-1"></i>Paid</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="bi bi-cart-x" style="font-size:2rem;"></i><br>No paid orders yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('adminSidebar').classList.toggle('show');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+        function filterTable(inputId, tableId) {
+            const val = document.getElementById(inputId).value.toLowerCase();
+            document.querySelectorAll('#' + tableId + ' tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+
+</html>

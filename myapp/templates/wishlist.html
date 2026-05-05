@@ -1,0 +1,71 @@
+{% extends 'header.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+
+    {% for i in wishlist %}
+    <div class="col-lg-4 col-md-6 d-flex align-items-stretch mb-4"
+         data-aos="zoom-in"
+         data-aos-delay="{{ forloop.counter0|add:'100' }}">
+
+      <div class="course-item w-100">
+
+        <a href="{% url 'cdetails' pk=i.courses.pk %}">
+          {% if i.courses.cimage %}
+            <img src="{{ i.courses.cimage.url }}" class="img-fluid">
+          {% else %}
+            <img src="{% static 'assets/img/default-course.jpg' %}" class="img-fluid">
+          {% endif %}
+        </a>
+
+        <div class="course-content">
+
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <p class="category">{{ i.courses.cname }}</p>
+            <p class="price">₹{{ i.courses.cprice }}</p>
+          </div>
+
+          <h3>
+            <a href="{% url 'cdetails' pk=i.courses.pk %}">
+              {{ i.courses.cname }}
+            </a>
+          </h3>
+
+          <p class="description">
+            {{ i.courses.desc|default:"Detailed course description is coming soon." }}
+          </p>
+
+          <div class="trainer d-flex align-items-center mt-3 gap-3">
+
+            {% if i.courses.timage %}
+              <img src="{{ i.courses.timage.url }}" class="img-fluid rounded-circle" style="width:40px;height:40px;">
+            {% else %}
+              <img src="{% static 'assets/img/default-user.png' %}" class="img-fluid rounded-circle" style="width:40px;height:40px;">
+            {% endif %}
+
+            <a href="#" class="trainer-link">{{ i.courses.tname }}</a>
+
+            <span class="trainer-rank d-flex align-items-center ms-auto">
+              <i class="bi bi-person"></i>&nbsp;50
+              &nbsp;&nbsp;
+              <i class="bi bi-heart"></i>&nbsp;65
+            </span>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    {% empty %}
+      <div class="col-12 text-center">
+        <p>Your wishlist is empty ❤️</p>
+      </div>
+    {% endfor %}
+
+  </div>
+</div>
+
+{% endblock %}

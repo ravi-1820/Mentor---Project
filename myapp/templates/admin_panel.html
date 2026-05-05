@@ -1,0 +1,735 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Admin Panel - Mentor</title>
+
+    <!-- Favicons -->
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Poppins:wght@300;400;500;600;700;800&family=Raleway:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Vendor CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+    <!-- Main CSS -->
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+
+    <style>
+        :root {
+            --mentor-primary: #5fcf80;
+            --mentor-blue: #1977cc;
+            --sidebar-bg: #1a1f2e;
+            --sidebar-text: #c8d0e0;
+            --sidebar-hover: rgba(95, 207, 128, 0.12);
+            --sidebar-active: var(--mentor-primary);
+            --card-shadow: 0 4px 24px rgba(0, 0, 0, .08);
+        }
+
+        body {
+            background: #f4f6fb;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ── Sidebar ── */
+        .admin-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            z-index: 1040;
+            transition: transform .3s ease;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, .15);
+        }
+
+        .sidebar-brand {
+            padding: 28px 24px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        .sidebar-brand h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-brand h1 span {
+            color: var(--mentor-primary);
+        }
+
+        .sidebar-brand small {
+            color: var(--sidebar-text);
+            font-size: .75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .nav-section-label {
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: rgba(200, 208, 224, .4);
+            text-transform: uppercase;
+            padding: 16px 24px 6px;
+        }
+
+        .sidebar-nav .nav-item {
+            list-style: none;
+        }
+
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 24px;
+            color: var(--sidebar-text);
+            font-size: .88rem;
+            font-weight: 500;
+            border-radius: 8px;
+            margin: 2px 12px;
+            transition: all .2s;
+            text-decoration: none;
+        }
+
+        .sidebar-nav .nav-link i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-nav .nav-link:hover {
+            background: var(--sidebar-hover);
+            color: #fff;
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav .nav-link.active {
+            background: linear-gradient(135deg, rgba(95, 207, 128, .2), rgba(95, 207, 128, .05));
+            color: var(--mentor-primary);
+            border-left: 3px solid var(--mentor-primary);
+            margin-left: 12px;
+            padding-left: 21px;
+        }
+
+        .sidebar-footer {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .sidebar-user img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--mentor-primary);
+        }
+
+        .sidebar-user-info .name {
+            color: #fff;
+            font-size: .85rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .sidebar-user-info .role {
+            color: var(--mentor-primary);
+            font-size: .7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 9px 14px;
+            background: rgba(255, 255, 255, .06);
+            color: var(--sidebar-text);
+            border: none;
+            border-radius: 8px;
+            font-size: .83rem;
+            font-weight: 500;
+            transition: all .2s;
+            text-decoration: none;
+        }
+
+        .btn-logout:hover {
+            background: rgba(220, 53, 69, .2);
+            color: #ff6b7a;
+        }
+
+        /* ── Main Content ── */
+        .admin-main {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 0 0 40px;
+        }
+
+        .admin-topbar {
+            background: #fff;
+            padding: 18px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-title h4 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a1f2e;
+        }
+
+        .topbar-title p {
+            margin: 0;
+            font-size: .78rem;
+            color: #8a94a6;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .topbar-badge {
+            background: var(--mentor-primary);
+            color: #fff;
+            font-size: .7rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .admin-content {
+            padding: 32px;
+        }
+
+        /* ── Stat Cards ── */
+        .stat-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 24px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, .04);
+            transition: transform .2s, box-shadow .2s;
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .12);
+        }
+
+        .stat-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon.green {
+            background: rgba(95, 207, 128, .15);
+            color: #5fcf80;
+        }
+
+        .stat-icon.blue {
+            background: rgba(25, 119, 204, .15);
+            color: #1977cc;
+        }
+
+        .stat-icon.orange {
+            background: rgba(253, 126, 20, .15);
+            color: #fd7e14;
+        }
+
+        .stat-icon.purple {
+            background: rgba(111, 66, 193, .15);
+            color: #6f42c1;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a1f2e;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: .82rem;
+            color: #8a94a6;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .stat-change {
+            font-size: .75rem;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .stat-change.up {
+            color: #5fcf80;
+        }
+
+        .stat-change.info {
+            color: #1977cc;
+        }
+
+        /* ── Section Header ── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-header h5 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1f2e;
+            margin: 0;
+        }
+
+        .btn-view-all {
+            font-size: .78rem;
+            color: var(--mentor-blue);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-view-all:hover {
+            color: var(--mentor-primary);
+        }
+
+        /* ── Table ── */
+        .admin-table-wrap {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .admin-table {
+            margin: 0;
+        }
+
+        .admin-table thead th {
+            background: #f8f9fc;
+            color: #5a6270;
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            border: none;
+            padding: 14px 18px;
+        }
+
+        .admin-table tbody td {
+            padding: 14px 18px;
+            vertical-align: middle;
+            border-color: #f0f2f7;
+            font-size: .86rem;
+        }
+
+        .admin-table tbody tr:hover {
+            background: #fafbff;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .badge-customer {
+            background: rgba(25, 119, 204, .12);
+            color: #1977cc;
+            font-size: .72rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .badge-manager {
+            background: rgba(95, 207, 128, .15);
+            color: #2e9c52;
+            font-size: .72rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .course-thumb {
+            width: 46px;
+            height: 34px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        /* ── Quick Actions ── */
+        .quick-action-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 22px 20px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: transform .2s;
+            text-decoration: none;
+            display: block;
+            border: 1px solid rgba(0, 0, 0, .04);
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .quick-action-card i {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .quick-action-card span {
+            font-size: .82rem;
+            font-weight: 600;
+            color: #1a1f2e;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 991.98px) {
+            .admin-sidebar {
+                transform: translateX(-260px);
+            }
+
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+
+            .admin-main {
+                margin-left: 0;
+            }
+
+            .sidebar-toggle {
+                display: flex !important;
+            }
+        }
+
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: #1a1f2e;
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            z-index: 1039;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- ═══════════════ SIDEBAR ═══════════════ -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+            <h1><span>M</span>entor</h1>
+            <small>Admin Panel</small>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul class="list-unstyled mb-0">
+                <li class="nav-section-label">Main</li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'admin_panel' %}">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-section-label">Manage</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'admin_users' %}">
+                        <i class="bi bi-people"></i> Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'admin_courses' %}">
+                        <i class="bi bi-mortarboard"></i> Courses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'admin_orders' %}">
+                        <i class="bi bi-cart-check"></i> Orders
+                    </a>
+                </li>
+
+                <li class="nav-section-label">Site</li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'index' %}">
+                        <i class="bi bi-house"></i> View Site
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <img src="{{ request.session.profile }}" alt="Admin">
+                <div class="sidebar-user-info">
+                    <div class="name">{{ admin_name }}</div>
+                    <div class="role">Manager</div>
+                </div>
+            </div>
+            <a href="{% url 'logout' %}" class="btn-logout">
+                <i class="bi bi-box-arrow-left"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+    <div class="admin-main">
+
+        <!-- Top Bar -->
+        <div class="admin-topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="topbar-title">
+                    <h4>Dashboard</h4>
+                    <p>Welcome back, {{ admin_name }} 👋</p>
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <span class="topbar-badge"><i class="bi bi-shield-check me-1"></i>Manager</span>
+                <a href="{% url 'mindex' %}" class="btn btn-sm btn-outline-secondary"
+                    style="border-radius:8px; font-size:.8rem;">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Site
+                </a>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="admin-content">
+
+            <!-- ── Stat Cards ── -->
+            <div class="row g-4 mb-4">
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="bi bi-people-fill"></i></div>
+                        <div class="stat-value">{{ total_users }}</div>
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-change up"><i class="bi bi-arrow-up-short"></i>All registered students &
+                            managers</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="bi bi-mortarboard-fill"></i></div>
+                        <div class="stat-value">{{ total_courses }}</div>
+                        <div class="stat-label">Total Courses</div>
+                        <div class="stat-change info"><i class="bi bi-grid-3x3-gap-fill me-1"></i>Live on platform</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="bi bi-bag-check-fill"></i></div>
+                        <div class="stat-value">{{ total_orders }}</div>
+                        <div class="stat-label">Paid Orders</div>
+                        <div class="stat-change up"><i class="bi bi-check-circle me-1"></i>Successfully completed</div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6">
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="bi bi-currency-rupee"></i></div>
+                        <div class="stat-value">₹{{ total_revenue }}</div>
+                        <div class="stat-label">Total Revenue</div>
+                        <div class="stat-change up"><i class="bi bi-graph-up-arrow me-1"></i>From paid orders</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Quick Actions ── -->
+            <div class="row g-3 mb-4">
+                <div class="col-12">
+                    <h6 class="fw-bold text-muted"
+                        style="font-size:.75rem; letter-spacing:1.5px; text-transform:uppercase;">Quick Actions</h6>
+                </div>
+
+                <div class="col-6 col-md-3">
+                    <a href="{% url 'admin_users' %}" class="quick-action-card">
+                        <i class="bi bi-people-fill" style="color:#1977cc;"></i>
+                        <span>View Users</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="{% url 'admin_courses' %}" class="quick-action-card">
+                        <i class="bi bi-collection-fill" style="color:#fd7e14;"></i>
+                        <span>All Courses</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="{% url 'admin_orders' %}" class="quick-action-card">
+                        <i class="bi bi-cart-check-fill" style="color:#6f42c1;"></i>
+                        <span>Orders</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- ── Recent Users ── -->
+                <div class="col-lg-6">
+                    <div class="section-header">
+                        <h5><i class="bi bi-people me-2" style="color:#1977cc;"></i>Recent Users</h5>
+                        <a href="{% url 'admin_users' %}" class="btn-view-all">View All <i
+                                class="bi bi-arrow-right"></i></a>
+                    </div>
+                    <div class="admin-table-wrap">
+                        <table class="table admin-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for u in recent_users %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            {% if u.profile %}
+                                            <img src="{{ u.profile.url }}" class="user-avatar" alt="{{ u.name }}">
+                                            {% else %}
+                                            <div class="user-avatar bg-secondary d-flex align-items-center justify-content-center text-white"
+                                                style="font-size:.7rem;">{{ u.name|first|upper }}</div>
+                                            {% endif %}
+                                            <span class="fw-600">{{ u.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted" style="font-size:.8rem;">{{ u.email }}</td>
+                                    <td>
+                                        {% if u.usertype == "Manager" %}
+                                        <span class="badge-manager">Manager</span>
+                                        {% else %}
+                                        <span class="badge-customer">Customer</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-4">No users found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ── Recent Courses ── -->
+                <div class="col-lg-6">
+                    <div class="section-header">
+                        <h5><i class="bi bi-mortarboard me-2" style="color:#5fcf80;"></i>Recent Courses</h5>
+                        <a href="{% url 'admin_courses' %}" class="btn-view-all">View All <i
+                                class="bi bi-arrow-right"></i></a>
+                    </div>
+                    <div class="admin-table-wrap">
+                        <table class="table admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Trainer</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in recent_courses %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <img src="{{ c.cimage.url }}" class="course-thumb" alt="{{ c.cname }}">
+                                            <span class="fw-600" style="font-size:.84rem;">{{ c.cname }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted" style="font-size:.8rem;">{{ c.tname }}</td>
+                                    <td><strong style="color:#5fcf80;">₹{{ c.cprice }}</strong></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-4">No courses found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /admin-content -->
+    </div><!-- /admin-main -->
+
+    <!-- Vendor JS -->
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('adminSidebar').classList.toggle('show');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+    </script>
+</body>
+
+</html>
